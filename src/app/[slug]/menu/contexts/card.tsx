@@ -30,7 +30,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addProduct = (product: CardProduct) => {
-    const productIsAlreadyOnTheCart = Products.some(
+    const productIsAlreadyOnTheCart = products.some(
       (prevProducts) => prevProducts.id === product.id,
     );
     if (!productIsAlreadyOnTheCart) {

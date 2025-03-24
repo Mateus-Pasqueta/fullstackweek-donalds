@@ -54,7 +54,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
               height={16}
               className="rounded-full"
             />
-            <p className="text-auted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {product.restaurant.name}
             </p>
           </div>
@@ -110,7 +110,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           </ScrollArea>
         </div>
 
-        <Button className="mt-3 w-full rounded-full" onClick={toggleCart}>
+        <Button className="w-full rounded-full" onClick={handleAddToCart}>
           Adicionar á sacola
         </Button>
       </div>
