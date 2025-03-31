@@ -12,6 +12,7 @@ import { formatCurrency } from "@/helpers/format-currency";
 import CartSheet from "../../components/cart-sheet";
 import { CartContext } from "../../contexts/card";
 
+
 interface ProductDetailsProps {
   product: Prisma.ProductGetPayload<{
     include: {
