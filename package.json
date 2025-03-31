@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "eslint --fix ./src",
-    "prebuild": "npm run lint:fix"
+    "lint": "next lint"
   },
   "prisma": {
     "seed": "ts-node ./prisma/seed.ts"
