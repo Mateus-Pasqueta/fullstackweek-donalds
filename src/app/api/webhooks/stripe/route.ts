@@ -23,59 +23,54 @@ export async function POST(request: Request) {
   const text = await request.text();
   const event = stripe.webhooks.constructEvent(text, signature, WebhookSecret);
 
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const orderId = event.data.object.metadata?.orderId;
-      if (!orderId) {
-        return NextResponse.json({
-          received: true,
-        });
-      }
-      // Atualizar o status do pedido
-      const order = await db.order.update({
-        where: {
-          id: Number(orderId),
-        },
-        data: {
-          status: "PAYMENT_CONFIRMED",
-        },
-        include: {
-          restaurant: {
-            select: {
-              slug: true,
-            },
+  if (event.type === "checkout.session.completed") {
+    const orderId = event.data.object.metadata?.orderId;
+    if (!orderId) {
+      return NextResponse.json({
+        received: true,
+      });
+    }
+    // Atualizar o status do pedido
+    const order = await db.order.update({
+      where: {
+        id: Number(orderId),
+      },
+      data: {
+        status: "PAYMENT_CONFIRMED",
+      },
+      include: {
+        restaurant: {
+          select: {
+            slug: true,
           },
         },
+      },
+    });
+    revalidatePath(`/${order.restaurant.slug}/orders`);
+  } else if (event.type === "charge.failed") {
+    const orderId = event.data.object.metadata?.orderId;
+    if (!orderId) {
+      return NextResponse.json({
+        received: true,
       });
-      revalidatePath(`/${order.restaurant.slug}/menu`);
-      break;
     }
-    case "charge.failed": {
-      const orderId = event.data.object.metadata?.orderId;
-      if (!orderId) {
-        return NextResponse.json({
-          received: true,
-        });
-      }
-      // Atualizar o status do pedido
-      const order = await db.order.update({
-        where: {
-          id: Number(orderId),
-        },
-        data: {
-          status: "PAYMENT_FAILED",
-        },
-        include: {
-          restaurant: {
-            select: {
-              slug: true,
-            },
+    // Atualizar o status do pedido
+    const order = await db.order.update({
+      where: {
+        id: Number(orderId),
+      },
+      data: {
+        status: "PAYMENT_FAILED",
+      },
+      include: {
+        restaurant: {
+          select: {
+            slug: true,
           },
         },
-      });
-      revalidatePath(`/${order.restaurant.slug}/menu`);
-      break;
-    }
+      },
+    });
+    revalidatePath(`/${order.restaurant.slug}/orders`);
   }
 
   return NextResponse.json({
